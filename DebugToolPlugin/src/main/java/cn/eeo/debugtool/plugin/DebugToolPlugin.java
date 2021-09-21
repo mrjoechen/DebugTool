@@ -6,6 +6,6 @@ import org.gradle.api.Project;
 public class DebugToolPlugin implements Plugin<Project> {
   @Override
   public void apply(Project project) {
-
+    System.out.println("DebugTool Plugin apply ...");
   }
 }

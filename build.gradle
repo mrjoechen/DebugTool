@@ -2,7 +2,9 @@
 buildscript {
     repositories {
         google()
-        mavenLocal()
+        maven {
+            url uri('./repo')
+        }
         jcenter()
     }
     dependencies {
@@ -10,6 +12,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.20"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'cn.eeo.debugtool:plugin:0.0.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -17,8 +20,10 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url uri(rootProject.layout.projectDirectory.dir("repo").toString())
+        }
         maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/jcenter' }
         google()
         mavenLocal()
         jcenter()
