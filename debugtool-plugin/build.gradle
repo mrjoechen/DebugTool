@@ -1,7 +1,7 @@
 apply plugin: 'java-library'
 apply plugin: 'groovy'
 apply plugin: 'kotlin'
-
+apply from: "publish.gradle"
 
 repositories {
   google()
@@ -13,32 +13,9 @@ dependencies {
   implementation localGroovy()
   implementation 'com.android.tools.build:gradle:4.1.0'
   implementation 'com.android.tools.build:gradle-api:4.1.0'
-  //noinspection GradleDependency
   implementation 'org.ow2.asm:asm:7.1'
-  //noinspection GradleDependency
   implementation 'org.ow2.asm:asm-util:7.1'
-  //noinspection GradleDependency
   implementation 'org.ow2.asm:asm-commons:7.1'
-}
-
-apply plugin: 'maven-publish'
-
-publishing {
-  publications {
-    maven(MavenPublication) {
-      groupId = 'cn.eeo.debugtool'
-      artifactId = 'plugin'
-      version = '0.0.1'
-      from components.java
-    }
-  }
-
-  repositories {
-    maven {
-      // change to point to your repo, e.g. http://my.org/repo
-      url = rootProject.layout.projectDirectory.dir('repo')
-    }
-  }
 }
 
 java {
