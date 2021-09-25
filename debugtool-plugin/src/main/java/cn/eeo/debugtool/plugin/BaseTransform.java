@@ -2,11 +2,14 @@ package cn.eeo.debugtool.plugin;
 
 import com.android.build.api.transform.QualifiedContent;
 import com.android.build.api.transform.Transform;
+import com.android.build.api.transform.TransformException;
+import com.android.build.api.transform.TransformInvocation;
 import com.android.build.gradle.internal.pipeline.TransformManager;
 
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,9 +18,7 @@ import java.util.Set;
  * e-mail : mrjctech@gmail.com
  */
 public class BaseTransform extends Transform {
-
-
-
+  private static final String TAG = "BaseTransform";
   private static final Set<QualifiedContent.Scope> SCOPES = new HashSet<>();
 
   static {
@@ -28,10 +29,10 @@ public class BaseTransform extends Transform {
 
   private final Logger logger;
   private final Project project;
-  private boolean emptyRun = false;
+  private boolean weaveTrigger = false;
 
-  public BaseTransform(Logger logger, Project project) {
-    this.logger = logger;
+  public BaseTransform(Project project) {
+    this.logger = project.getLogger();
     this.project = project;
   }
 
@@ -53,6 +54,43 @@ public class BaseTransform extends Transform {
   @Override
   public boolean isIncremental() {
     return true;
+  }
+
+  @Override
+  public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
+    super.transform(transformInvocation);
+    BuildType buildType = getBuildType();
+    String variantName = transformInvocation.getContext().getVariantName();
+    logger.info(TAG, "variantName: " + variantName);
+    if ("debug".equals(variantName)){
+      weaveTrigger = buildType == BuildType.DEBUG || buildType == BuildType.ALWAYS;
+    }
+
+    if ("release".equals(variantName)){
+      weaveTrigger = buildType == BuildType.RELEASE || buildType == BuildType.ALWAYS;
+    }
+
+    if (buildType == BuildType.NEVER){
+      weaveTrigger = false;
+    }
+
+    long startTime = System.currentTimeMillis();
+
+    boolean incremental = transformInvocation.isIncremental();
+
+    if (!incremental){
+      transformInvocation.getOutputProvider().deleteAll();
+    }
+
+
+    long cost = System.currentTimeMillis() - startTime;
+    logger.info(getClass().getSimpleName(), "transform cost: " + cost +" ms");
+
+
+  }
+
+  protected BuildType getBuildType(){
+    return BuildType.NEVER;
   }
 
 }

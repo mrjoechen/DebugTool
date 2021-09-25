@@ -1,34 +1,47 @@
 package cn.eeo.debugtool.plugin;
 
-import com.android.build.api.transform.QualifiedContent;
-import com.android.build.api.transform.Transform;
+import com.android.build.api.transform.TransformException;
+import com.android.build.api.transform.TransformInvocation;
 
-import java.util.Set;
+import org.gradle.api.Project;
+
+import java.io.IOException;
 
 /**
  * Created by chenqiao on 2021/9/24.
  * e-mail : mrjctech@gmail.com
  */
-public class DebugToolTransform extends Transform {
+public class DebugToolTransform extends BaseTransform {
+
+  private static final String DEBUG_TOOL_EXT_NAME = "debugToolExt";
+
+  private Project project;
+  private DebugToolExtension debugToolExtension;
+
+  public DebugToolTransform(Project project) {
+    super(project);
+    this.project = project;
+    project.getExtensions().create(DEBUG_TOOL_EXT_NAME, DebugToolExtension.class);
+  }
 
 
   @Override
-  public String getName() {
-    return null;
+  public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
+    debugToolExtension = (DebugToolExtension) project.getExtensions().getByName(DEBUG_TOOL_EXT_NAME);
+    super.transform(transformInvocation);
   }
 
   @Override
-  public Set<QualifiedContent.ContentType> getInputTypes() {
-    return null;
+  protected BuildType getBuildType() {
+    return debugToolExtension.buildType;
   }
 
-  @Override
-  public Set<? super QualifiedContent.Scope> getScopes() {
-    return null;
+  public boolean isTimingEnable(){
+    return debugToolExtension.timingEnable;
   }
 
-  @Override
-  public boolean isIncremental() {
-    return false;
+  public boolean isParameterEnableEnable(){
+    return debugToolExtension.parameterEnable;
   }
+
 }
