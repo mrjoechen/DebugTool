@@ -15,7 +15,7 @@ public class DebugToolCollectAnnoMethodVisitor extends MethodVisitor implements 
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         AnnotationVisitor annotationVisitor = super.visitAnnotation(descriptor, visible);
 
-        if ("".equals(descriptor)){
+        if ("Lcn/eeo/debug/lib/DebugProbe;".equals(descriptor)){
 
         }
         return annotationVisitor;

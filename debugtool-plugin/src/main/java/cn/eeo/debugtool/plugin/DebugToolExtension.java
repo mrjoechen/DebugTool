@@ -19,6 +19,9 @@ class DebugToolExtension {
 
   List<String> excludeFiles;
 
+  public DebugToolExtension() {
+  }
+
   static DebugToolExtension getConfig(Project project) {
     DebugToolExtension extension = project.getExtensions().findByType(DebugToolExtension.class);
     if (extension == null) {

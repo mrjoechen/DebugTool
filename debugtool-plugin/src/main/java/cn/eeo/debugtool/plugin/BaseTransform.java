@@ -93,4 +93,8 @@ public class BaseTransform extends Transform {
     return BuildType.NEVER;
   }
 
+  public boolean checkClassFile(String fileName){
+    return fileName.endsWith(".class");
+  }
+
 }

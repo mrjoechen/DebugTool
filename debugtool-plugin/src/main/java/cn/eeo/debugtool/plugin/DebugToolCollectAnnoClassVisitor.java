@@ -26,7 +26,7 @@ public class DebugToolCollectAnnoClassVisitor extends ClassVisitor implements Op
         if ("".equals(this.mClassName)) {
             if ("".equals(name) ) {
                 System.out.println("DebugToolCollectAnnoClassVisitor : change method ----> " + name);
-                return new DebugToolMethodVisitor(mv);
+                return new DebugToolMethodVisitor(mClassName, name, mv, access, desc);
             }
         }
         return mv;
