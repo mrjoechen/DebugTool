@@ -10,18 +10,18 @@ public class DebugLogger {
 
 
   public static void main(String[] args) {
-    enterMethod("className1", "method1");
-    enterMethod("className2", "method2");
-    enterMethod("className3", "method3");
+    enterMethod("className1", "method1", "");
+    enterMethod("className2", "method2", "");
+    enterMethod("className3", "method3", "");
 
     debug("className1", "method1", 100);
     debug("className2", "method2", 100);
     debug("className3", "method3", 100);
 
 
-    exitMethod("className1", "method1");
-    exitMethod("className2", "method2");
-    exitMethod("className3", "method3");
+    exitMethod("className1", "method1", "123");
+    exitMethod("className2", "method2", "void");
+    exitMethod("className3", "method3", "aaa");
 
 
   }
@@ -32,15 +32,15 @@ public class DebugLogger {
   }
 
   public static void debug(String className, String methodName, long cost){
-    debug("DebugTool: "+className.replace("/", "."), "--- [" + methodName + "] cost " + cost + " ms");
+    debug("DebugTool: "+className.replace("/", "."), " ▶ [" + methodName + "] cost " + cost + " ms");
   }
 
-  public static void enterMethod(String className, String methodName){
-    debug("DebugTool: "+className.replace("/", "."), "--> [" + methodName + "] ");
+  public static void enterMethod(String className, String methodName, String parameter){
+    debug("DebugTool: "+className.replace("/", "."), "-> [" + methodName + "] (" + parameter +")");
   }
 
-  public static void exitMethod(String className, String methodName){
-    debug("DebugTool: "+className.replace("/", "."), "<-- [" + methodName + "] ");
+  public static void exitMethod(String className, String methodName, String returnValue){
+    debug("DebugTool: "+className.replace("/", "."), "<- [" + methodName + "] (" + returnValue +")");
   }
 
 }
