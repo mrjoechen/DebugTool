@@ -4,12 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import cn.eeo.debug.lib.DebugProbe
+import cn.eeo.debug.lib.DebugSkip
 
+@DebugProbe
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-
-
-    @DebugProbe
+    @DebugSkip
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    @DebugProbe
+
     override fun onClick(p0: View?) {
 
         Thread.sleep(300);

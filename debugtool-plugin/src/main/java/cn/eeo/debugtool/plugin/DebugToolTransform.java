@@ -26,23 +26,20 @@ public class DebugToolTransform extends BaseTransform {
 
 
   @Override
-  public void transform(TransformInvocation transformInvocation) {
+  public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
     debugToolExtension = (DebugToolExtension) project.getExtensions().getByName(DEBUG_TOOL_EXT_NAME);
+    super.transform(transformInvocation);
 
-//    super.transform(transformInvocation);
-    transformInvocation.getInputs().forEach(transformInput -> {
-      transformInput.getDirectoryInputs().forEach(directoryInput ->
-          TransformHelper.INSTANCE.transformDirectoryFiles(directoryInput, transformInvocation.getOutputProvider())
-      );
-      transformInput.getJarInputs().forEach(jarInput ->
-          TransformHelper.INSTANCE.transformJarFiles(jarInput, transformInvocation.getOutputProvider())
-      );
-    });
   }
 
   @Override
   protected BuildType getBuildType() {
     return debugToolExtension.buildType;
+  }
+
+  @Override
+  BaseInjection getBaseInjection() {
+    return new DebugInjection();
   }
 
   public boolean isTimingEnable() {

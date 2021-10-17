@@ -17,7 +17,7 @@ import java.util.Set;
  * Created by chenqiao on 2021/9/24.
  * e-mail : mrjctech@gmail.com
  */
-public class BaseTransform extends Transform {
+abstract class BaseTransform extends Transform {
   private static final String TAG = "BaseTransform";
   private static final Set<QualifiedContent.Scope> SCOPES = new HashSet<>();
 
@@ -29,7 +29,9 @@ public class BaseTransform extends Transform {
 
   private final Logger logger;
   private final Project project;
-  private boolean weaveTrigger = false;
+  private boolean injectTrigger = false;
+
+
 
   public BaseTransform(Project project) {
     this.logger = project.getLogger();
@@ -59,22 +61,25 @@ public class BaseTransform extends Transform {
   @Override
   public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
     super.transform(transformInvocation);
+
+    long startTime = System.currentTimeMillis();
+    System.out.println(getClass().getSimpleName() + "---> start transform: ");
+
     BuildType buildType = getBuildType();
     String variantName = transformInvocation.getContext().getVariantName();
     logger.info(TAG, "variantName: " + variantName);
-    if ("debug".equals(variantName)){
-      weaveTrigger = buildType == BuildType.DEBUG || buildType == BuildType.ALWAYS;
+    if (variantName.toLowerCase().contains("debug")){
+      injectTrigger = buildType == BuildType.DEBUG || buildType == BuildType.ALWAYS;
     }
 
-    if ("release".equals(variantName)){
-      weaveTrigger = buildType == BuildType.RELEASE || buildType == BuildType.ALWAYS;
+    if (variantName.toLowerCase().contains("release")){
+      injectTrigger = buildType == BuildType.RELEASE || buildType == BuildType.ALWAYS;
     }
 
     if (buildType == BuildType.NEVER){
-      weaveTrigger = false;
+      injectTrigger = false;
     }
 
-    long startTime = System.currentTimeMillis();
 
     boolean incremental = transformInvocation.isIncremental();
 
@@ -82,19 +87,27 @@ public class BaseTransform extends Transform {
       transformInvocation.getOutputProvider().deleteAll();
     }
 
+    if (injectTrigger){
+      transformInvocation.getInputs().forEach(transformInput -> {
+        transformInput.getDirectoryInputs().forEach(directoryInput ->
+            getBaseInjection().transformDirectoryFiles(directoryInput, transformInvocation.getOutputProvider())
+        );
+        transformInput.getJarInputs().forEach(jarInput ->
+            getBaseInjection().transformJarFiles(jarInput, transformInvocation.getOutputProvider())
+        );
+      });
+    }
 
     long cost = System.currentTimeMillis() - startTime;
-    logger.info(getClass().getSimpleName(), "transform cost: " + cost +" ms");
+    logger.warn(getClass().getSimpleName(), "debug tool transform cost: " + cost +" ms");
 
-
+    System.out.println(getClass().getSimpleName() + "---> transform cost: " + cost +" ms");
   }
 
   protected BuildType getBuildType(){
     return BuildType.NEVER;
   }
 
-  public boolean checkClassFile(String fileName){
-    return fileName.endsWith(".class");
-  }
+  abstract BaseInjection getBaseInjection();
 
 }
