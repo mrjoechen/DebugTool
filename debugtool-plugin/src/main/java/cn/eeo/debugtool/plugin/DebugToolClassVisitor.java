@@ -11,6 +11,7 @@ public class DebugToolClassVisitor extends ClassVisitor implements Opcodes {
 
     private String mClassName;
     private boolean injectAllMethods;
+    private boolean excludeClass;
 
     public DebugToolClassVisitor(ClassVisitor classVisitor) {
         super(Opcodes.ASM7, classVisitor);
@@ -30,7 +31,6 @@ public class DebugToolClassVisitor extends ClassVisitor implements Opcodes {
         if ("Lcn/eeo/debug/lib/DebugProbe;".equals(descriptor)){
             injectAllMethods = true;
             System.out.println("DebugToolClassVisitor : inject class -----> ：" + mClassName);
-
         }
         return annotationVisitor;
     }
@@ -41,9 +41,11 @@ public class DebugToolClassVisitor extends ClassVisitor implements Opcodes {
 //        if ("cn/eeo/debugtool/MainActivity".equals(mClassName)) {
 //            System.out.println("DebugToolClassVisitor : visitMethod :name " + name + " desc:" + desc);
 
+        if (!excludeClass){
             return new DebugToolMethodVisitor(mClassName, name, mv, access, desc, injectAllMethods);
+        }
 //        }
-//        return mv;
+        return mv;
     }
 
     @Override

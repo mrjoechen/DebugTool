@@ -24,34 +24,40 @@ import java.util.zip.ZipEntry
  */
 abstract class BaseInjection {
 
+  private val PLUGIN_LIBRARY = "cn.eeo.debug.lib"
+
+
   open fun checkClass(className: String): Boolean {
-    return className.endsWith(".class") && ! className.contains("R$") && ! className.contains("R.class") && ! className.contains(
-      "BuildConfig.class"
-    )
+    return className.endsWith(".class") &&
+        ! className.contains("R$") &&
+        ! className.contains("R.class") &&
+        ! className.contains("BuildConfig.class") &&
+        ! className.contains(PLUGIN_LIBRARY)
   }
 
   fun transformDirectoryFiles(directoryInput: DirectoryInput, outputProvider: TransformOutputProvider) {
     directoryInput.file.walkTopDown()
-      .filter { it.isFile && checkClass(it.name)}
-      .forEach { file ->
+      .filter {it.isFile && checkClass(it.name)}
+      .forEach {file ->
         transformClassFile(file)
       }
     val dest = outputProvider.getContentLocation(
       directoryInput.name,
       directoryInput.contentTypes,
       directoryInput.scopes,
-      Format.DIRECTORY)
+      Format.DIRECTORY
+    )
 
     FileUtils.copyDirectory(directoryInput.file, dest)
   }
 
-  fun transformClassFile(file: File){
-    FileInputStream(file).use { fis ->
-      file.writeBytes(transformClassFile(fis))
+  fun transformClassFile(file: File) {
+    FileInputStream(file).use {fis ->
+      file.writeBytes(transformClassFile(file.name, fis))
     }
   }
 
-  open fun transformClassFile(inputStream: InputStream): ByteArray{
+  open fun transformClassFile(fileName: String, inputStream: InputStream): ByteArray {
     val classReader = ClassReader(inputStream)
     val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
     classReader.accept(getClassVisitor(classWriter), ClassReader.EXPAND_FRAMES)
@@ -59,21 +65,21 @@ abstract class BaseInjection {
   }
 
   fun transformJarFiles(jarInput: JarInput, outputProvider: TransformOutputProvider) {
-    if (!jarInput.file.absolutePath.endsWith(".jar")) {
+    if (! jarInput.file.absolutePath.endsWith(".jar")) {
       println(jarInput.file.absolutePath)
       return
     }
 
-    val tmpFile = File(jarInput.file.parentFile, "${jarInput.file.name}.temp").also { it.createNewFile() }
+    val tmpFile = File(jarInput.file.parentFile, "${jarInput.file.name}.temp").also {it.createNewFile()}
 
-    JarFile(jarInput.file).use { jarFile ->
-      JarOutputStream(FileOutputStream(tmpFile)).use { jarOutputStream ->
-        jarFile.entries().iterator().forEach { jarEntry ->
+    JarFile(jarInput.file).use {jarFile ->
+      JarOutputStream(FileOutputStream(tmpFile)).use {jarOutputStream ->
+        jarFile.entries().iterator().forEach {jarEntry ->
           val zipEntry = ZipEntry(jarEntry.name)
-          jarFile.getInputStream(jarEntry).use { inputStream ->
+          jarFile.getInputStream(jarEntry).use {inputStream ->
             if (checkClass(jarEntry.name)) {
               jarOutputStream.putNextEntry(zipEntry)
-              jarOutputStream.write(transformClassFile(inputStream))
+              jarOutputStream.write(transformClassFile(jarEntry.name, inputStream))
             } else {
               jarOutputStream.putNextEntry(zipEntry)
               jarOutputStream.write(IOUtils.toByteArray(inputStream))
@@ -89,7 +95,8 @@ abstract class BaseInjection {
       jarInput.file.nameWithoutExtension + DigestUtils.md5Hex(jarInput.file.absolutePath),
       jarInput.contentTypes,
       jarInput.scopes,
-      Format.JAR)
+      Format.JAR
+    )
     FileUtils.copyFile(tmpFile, dest)
   }
 

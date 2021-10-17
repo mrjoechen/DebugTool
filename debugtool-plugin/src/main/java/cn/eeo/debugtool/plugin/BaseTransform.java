@@ -24,7 +24,7 @@ abstract class BaseTransform extends Transform {
   static {
     SCOPES.add(QualifiedContent.Scope.PROJECT);
     SCOPES.add(QualifiedContent.Scope.SUB_PROJECTS);
-    SCOPES.add(QualifiedContent.Scope.EXTERNAL_LIBRARIES);
+//    SCOPES.add(QualifiedContent.Scope.EXTERNAL_LIBRARIES);
   }
 
   private final Logger logger;
@@ -63,7 +63,7 @@ abstract class BaseTransform extends Transform {
     super.transform(transformInvocation);
 
     long startTime = System.currentTimeMillis();
-    System.out.println(getClass().getSimpleName() + "---> start transform: ");
+    System.out.println(getClass().getSimpleName() + " ---> start transform: ");
 
     BuildType buildType = getBuildType();
     String variantName = transformInvocation.getContext().getVariantName();
@@ -101,7 +101,7 @@ abstract class BaseTransform extends Transform {
     long cost = System.currentTimeMillis() - startTime;
     logger.warn(getClass().getSimpleName(), "debug tool transform cost: " + cost +" ms");
 
-    System.out.println(getClass().getSimpleName() + "---> transform cost: " + cost +" ms");
+    System.out.println(getClass().getSimpleName() + " ---> transform cost: " + cost +" ms");
   }
 
   protected BuildType getBuildType(){
