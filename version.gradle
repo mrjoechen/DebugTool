@@ -1,0 +1,2 @@
+ext.debugtool_version = [:]
+debugtool_version.release = '0.0.1'

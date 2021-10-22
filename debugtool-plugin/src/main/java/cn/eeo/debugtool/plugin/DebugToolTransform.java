@@ -13,7 +13,6 @@ import java.io.IOException;
  */
 public class DebugToolTransform extends BaseTransform {
 
-  private static final String DEBUG_TOOL_EXT_NAME = "debugToolExt";
 
   private Project project;
   private DebugToolExtension debugToolExtension;
@@ -21,13 +20,12 @@ public class DebugToolTransform extends BaseTransform {
   public DebugToolTransform(Project project) {
     super(project);
     this.project = project;
-    project.getExtensions().create(DEBUG_TOOL_EXT_NAME, DebugToolExtension.class);
   }
 
 
   @Override
   public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
-    debugToolExtension = (DebugToolExtension) project.getExtensions().getByName(DEBUG_TOOL_EXT_NAME);
+    debugToolExtension = DebugToolExtension.getConfig(project);
     super.transform(transformInvocation);
 
   }

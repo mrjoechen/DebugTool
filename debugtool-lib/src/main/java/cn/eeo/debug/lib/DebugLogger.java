@@ -27,12 +27,12 @@ public class DebugLogger {
   }
 
   public static void debug(String tag, String msg){
-//    Log.d(tag, msg);
-    System.out.println(tag + ":" + msg);
+    Log.d(tag, msg);
+//    System.out.println(tag + ":" + msg);
   }
 
   public static void debug(String className, String methodName, long cost){
-    debug("DebugTool: "+className.replace("/", "."), " ▶ [" + methodName + "] cost " + cost + " ms");
+    debug("DebugTool: "+className.replace("/", "."), " ▶ [" + methodName + "] " + cost + " ms");
   }
 
   public static void enterMethod(String className, String methodName, String parameter){

@@ -10,10 +10,7 @@ import org.apache.commons.io.IOUtils
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
+import java.io.*
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
@@ -51,13 +48,33 @@ abstract class BaseInjection {
     FileUtils.copyDirectory(directoryInput.file, dest)
   }
 
-  fun transformClassFile(file: File) {
-    FileInputStream(file).use {fis ->
-      file.writeBytes(transformClassFile(file.name, fis))
+
+  fun transformSingleClassFile(inputFile: File, outputFile: File?, inputBaseDir: String) {
+    var inputBaseDir = inputBaseDir
+    if (! inputBaseDir.endsWith(File.separator)) inputBaseDir += File.separator
+    if (checkClass(inputFile.absolutePath.replace(inputBaseDir, "").replace(File.separator, "."))) {
+      org.apache.commons.io.FileUtils.touch(outputFile)
+      val inputStream: InputStream = FileInputStream(inputFile)
+      val bytes: ByteArray = transformClassFile(inputStream)
+      val fos = FileOutputStream(outputFile)
+      fos.write(bytes)
+      fos.close()
+      inputStream.close()
+    } else {
+      if (inputFile.isFile) {
+        org.apache.commons.io.FileUtils.touch(outputFile)
+        org.apache.commons.io.FileUtils.copyFile(inputFile, outputFile)
+      }
     }
   }
 
-  open fun transformClassFile(fileName: String, inputStream: InputStream): ByteArray {
+  fun transformClassFile(file: File) {
+    FileInputStream(file).use {fis ->
+      file.writeBytes(transformClassFile(fis))
+    }
+  }
+
+  open fun transformClassFile(inputStream: InputStream): ByteArray {
     val classReader = ClassReader(inputStream)
     val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
     classReader.accept(getClassVisitor(classWriter), ClassReader.EXPAND_FRAMES)
@@ -79,7 +96,7 @@ abstract class BaseInjection {
           jarFile.getInputStream(jarEntry).use {inputStream ->
             if (checkClass(jarEntry.name)) {
               jarOutputStream.putNextEntry(zipEntry)
-              jarOutputStream.write(transformClassFile(jarEntry.name, inputStream))
+              jarOutputStream.write(transformClassFile(inputStream))
             } else {
               jarOutputStream.putNextEntry(zipEntry)
               jarOutputStream.write(IOUtils.toByteArray(inputStream))

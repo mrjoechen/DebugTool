@@ -1,9 +1,9 @@
 apply plugin: 'maven-publish'
-
+apply from: "../version.gradle"
 ext {
-  LIB_GROUP_ID = 'cn.eeo.debugtool'
-  LIB_ARTIFACT_ID = 'debugtool-lib'
-  LIB_VERSION = '0.0.1'
+  GROUPID = 'cn.eeo.debugtool'
+  ARTIFACTID = 'debugtool-lib'
+  VERSION = debugtool_version.release
 }
 
 
@@ -32,9 +32,9 @@ afterEvaluate {
     }
     publications {
       maven(MavenPublication) {
-        groupId LIB_GROUP_ID
-        artifactId LIB_ARTIFACT_ID
-        version LIB_VERSION
+        groupId GROUPID
+        artifactId ARTIFACTID
+        version VERSION
         from components.release
 //        artifact("$buildDir/outputs/aar//${LIB_ARTIFACT_ID}-release.aar")
 //        artifact(sourceJar)
@@ -42,3 +42,6 @@ afterEvaluate {
     }
   }
 }
+
+
+//apply from: "https://gl.eeo.im/eeo-android/compile/raw/master/maven_publish.gradle"
