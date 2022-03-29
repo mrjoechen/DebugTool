@@ -27,13 +27,13 @@ cn.eeo.debugtool D/DebugTool: cn.eeo.debugtool.MainActivity:  [onCreate] cost 9
 1. add classpath to root project level build.gradle
 
 ```
-    classpath 'cn.eeo.debugtool:debugtool-plugin:0.0.1'
+    classpath 'cn.eeo.android.business:debugtool-plugin:0.1.1'
 ```
 
 2. add dependencies to project module build.gradle
 
 ```
-    implementation 'cn.eeo.debugtool:debugtool-lib:0.0.1'
+    implementation 'cn.eeo.android.business:debugtool-lib:0.1.1'
 ```
 
 3. apply plugin
@@ -105,3 +105,5 @@ TODO
 - Support for incremental compilation
 ...
 
+updateLog
+- add Thread Name to log 22.03.29 
