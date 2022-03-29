@@ -4,9 +4,9 @@ public class Test {
 
   void test(){
     long pre = System.currentTimeMillis();
-
-
-    DebugLogger.debug("className", "methodName", (System.currentTimeMillis() - pre));
+    long duration = System.currentTimeMillis() - pre;
+    String threadName = Thread.currentThread().getName();
+    DebugLogger.debugWithThread(threadName, "className", "methodName", duration);
 
   }
 }

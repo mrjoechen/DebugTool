@@ -78,10 +78,24 @@ public class DebugToolMethodVisitor extends LocalVariablesSorter implements Opco
       mv.visitVarInsn(LLOAD, startTimeId);
       mv.visitInsn(LSUB);
       mv.visitVarInsn(LSTORE, durationId);
+
+      mv.visitTypeInsn(NEW, "java/lang/String");
+      mv.visitInsn(DUP);
+      mv.visitLdcInsn("Hello");
+      mv.visitMethodInsn(INVOKESPECIAL, "java/lang/String", "<init>", "(Ljava/lang/String;)V", false);
+      mv.visitVarInsn(ASTORE, 0);
+
+      Type threadType = Type.getObjectType("java/lang/String");
+      int threadVarId = newLocal(threadType);
+      mv.visitMethodInsn(INVOKESTATIC, "java/lang/Thread", "currentThread", "()Ljava/lang/Thread;", false);
+      mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Thread", "getName", "()Ljava/lang/String;", false);
+      mv.visitVarInsn(ASTORE, threadVarId);
+      mv.visitVarInsn(ALOAD, threadVarId);
+
       mv.visitLdcInsn(className);
       mv.visitLdcInsn(methodName);
       mv.visitVarInsn(LLOAD, durationId);
-      mv.visitMethodInsn(INVOKESTATIC, "cn/eeo/debug/lib/DebugLogger", "debug", "(Ljava/lang/String;Ljava/lang/String;J)V", false);
+      mv.visitMethodInsn(INVOKESTATIC, "cn/eeo/debug/lib/DebugLogger", "debugWithThread", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V", false);
 
     }
 

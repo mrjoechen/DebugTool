@@ -14,9 +14,9 @@ public class DebugLogger {
     enterMethod("className2", "method2", "");
     enterMethod("className3", "method3", "");
 
-    debug("className1", "method1", 100);
-    debug("className2", "method2", 100);
-    debug("className3", "method3", 100);
+    debugWithThread(Thread.currentThread().getName(), "className1", "method1", 100);
+    debugWithThread(Thread.currentThread().getName(), "className2", "method2", 100);
+    debugWithThread(Thread.currentThread().getName(), "className3", "method3", 100);
 
 
     exitMethod("className1", "method1", "123");
@@ -33,6 +33,10 @@ public class DebugLogger {
 
   public static void debug(String className, String methodName, long cost){
     debug("DebugTool: "+className.replace("/", "."), " ▶ [" + methodName + "] cost " + cost + " ms");
+  }
+
+  public static void debugWithThread(String threadName, String className, String methodName, long cost){
+    debug("DebugTool: [" + threadName + "] " +className.replace("/", "."), " ▶ [" + methodName + "] cost " + cost + " ms");
   }
 
   public static void enterMethod(String className, String methodName, String parameter){
